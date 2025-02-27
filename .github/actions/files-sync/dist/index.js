@@ -35188,9 +35188,9 @@ const _parseRepoSyncedFiles = (teamConfig, repo) => {
 
     let repoSyncedFiles = [];
 
-    if (teamConfig.syncedFiles) {
-        for ( const syncedFile in teamConfig.syncedFiles ) {
-            if (teamConfig.syncedFiles[syncedFile].includes(repo)) {
+    if (teamConfig['synced-files']) {        
+        for ( const syncedFile in teamConfig['synced-files'] ) {
+            if (teamConfig['synced-files'][syncedFile].includes(repo)) {
                 repoSyncedFiles.push(syncedFile);
             }
         }
