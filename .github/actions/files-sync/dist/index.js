@@ -35118,7 +35118,7 @@ const updateConfiguredSyncedFileRepos = async (template) => {
     for ( const repo in reposConfig ){
         let repoSyncedFile = null;
 
-        if (reposConfig[repo]['synced-files']?.includes(templateName)) {
+        if (reposConfig[repo]['synced-files']?.includes(template)) {
             repoSyncedFile = fileContent.replace(
                 /{{{REPO_WRITE_PAT}}}/g,
                 reposConfig[repo].secrets?.['repo-write'] ?? ''
@@ -35130,7 +35130,7 @@ const updateConfiguredSyncedFileRepos = async (template) => {
             repo,
             getSyncedFileDestinationBasePathFromType(type) + '/' + name,
             repoSyncedFile,
-            `The repository ${repo} does not have the ${templateName} associated, and deletion is disabled: see process_deletion action's parameter.`
+            `The repository ${repo} does not have the ${template} associated, and deletion is disabled: see process_deletion action's parameter.`
         );
     }
 }
