@@ -1,0 +1,83 @@
+###
+#
+# This workflow file is deployed into this repository via the "Sync PHPCS Organization File" workflow
+#
+# Direct edits to this file are at risk of being overwritten by the next sync. All edits should be made
+# to the source file.
+#
+# @see Sync workflow {@link https://github.com/caseproof/org-admin/blob/main/.github/workflows/workflow-phpcs-sync.yml}
+# @see Workflow template {@link https://github.com/caseproof/org-admin/blob/main/.github/workflow-templates/phpcs.yml}
+#
+###
+name: PHP Coding Standards
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ 'pull_request' == github.event_name && github.head_ref || github.sha }}
+  cancel-in-progress: true
+
+env:
+  RUN_ON_CHANGESET: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    name: PHP Coding Standards
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ fromJson(vars.PHP_VERSIONS)[0] }} # Run on lowest supported PHP version so we don't implement features that are not supported.
+          ini-values: error_reporting=E_ALL
+          tools: composer:v2
+          coverage: none
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: |
+          echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@v3
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.json') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install dependencies
+        env:
+          COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{secrets.CSPF_REPO_READ_PAT}}"}}'
+        run: composer update
+
+      - name: Determine Check CS Scope
+        env:
+          PR_NUMBER: ${{ github.event.number }}
+          GH_TOKEN: ${{ secrets.CSPF_REPO_READ_PAT }}
+        shell: bash {0} # Needed b/c by default of the fast-failure behavior of the github shell.
+        run: |
+          CHANGESET=`gh pr diff ${PR_NUMBER} --name-only`
+          if [[ $? -ne 0 ]]; then
+            # An error occurred, e.g. the number of changed files exceeded the limit (300).
+            # Set the env variable to run the CS check on the whole codebase.
+            echo RUN_ON_CHANGESET='false' >> $GITHUB_ENV
+          else
+            # Store the changeset in an env variable,
+            echo CHANGESET=${CHANGESET} >> $GITHUB_ENV
+          fi
+
+      - name: Check CS on PR
+        if: ${{ env.RUN_ON_CHANGESET == 'true' }}
+        run: |
+          echo $CHANGESET | xargs find 2> /dev/null | xargs -r composer run cs-check -- --runtime-set ignore_warnings_on_exit true
+
+      - name: Check CS
+        if: ${{ env.RUN_ON_CHANGESET == 'false' }}
+        run: composer run cs-check -- --runtime-set ignore_warnings_on_exit true

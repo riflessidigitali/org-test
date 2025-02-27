@@ -1,0 +1,27 @@
+name: 'Organization File Sync Action'
+description: 'Action to copy various files across company repositories'
+inputs:
+  secrets:
+    description: 'GitHub secrets'
+    required: true
+  org:
+    description: 'The GitHub organization slug'
+    default: 'caseproof'
+  what:
+    description: 'What to sync'
+    type: choice
+    options:
+      - workflow/deploy-gridpane.yml
+      - workflow/keep-alive.yml
+      - workflow/phpcs.yml
+      - workflow/phpunit.yml
+      - workflow/project-automation.yml
+      - workflow/membercore-build.yml
+      - workflow/membercore-trigger-builds.yml
+    required: true
+  process_deletion:
+    description: 'When set to `true` the action will also delete the files meant to be copied from repositories which are not associated to any teams/projects. Default is `false`'
+    default: false
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

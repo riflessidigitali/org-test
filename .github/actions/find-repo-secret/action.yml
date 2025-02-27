@@ -1,0 +1,23 @@
+name: 'Organization Find Repository Secret'
+description: 'Action to find a repository secret key as defined in org teams config given a repository name and a secret type.'
+inputs:
+  repo:
+    description: 'Repository slug'
+    required: true
+  secretType:
+    description: 'Secret type'
+    required: true
+    option:
+      - workflow-manage
+      - issue-manage
+      - repo-write
+    default: workflow-manage
+  teamsConfigPath:
+    description: 'Teams config path'
+    required: false
+outputs:
+  secretKey:
+    description: 'The secret key to use'
+runs:
+  using: 'node20'
+  main: 'dist/index.js'

@@ -1,0 +1,22 @@
+{
+    "name": "find-repo-secret",
+    "version": "1.0.0",
+    "description": "Action to find a secret key among  associated with a repository",
+    "main": "dist/index.js",
+    "author": "Team Caseproof <team@caseproof.com>",
+    "license": "MIT",
+    "dependencies": {
+      "@actions/core": "^1.10.1",
+      "@actions/github": "^6.0.0",
+      "js-yaml": "^4.1.0"
+    },
+    "devDependencies": {
+      "@vercel/ncc": "^0.38.1",
+      "@caseproof/eslint-plugin": "github:caseproof/coding-standards-js"
+    },
+    "scripts": {
+      "build": "ncc build src/index.js --license licenses.txt",
+      "cs-check": "eslint ./src",
+      "cs-fix": "eslint ./src --fix"
+    }
+  }

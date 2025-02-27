@@ -1,0 +1,120 @@
+name: Deploy (GridPane)
+on:
+  push:
+    paths-ignore:
+      - '**.md'
+      - '.github/**'
+  workflow_dispatch:
+    inputs:
+      debug:
+        type: boolean
+        description: 'Debug mode'
+        required: false
+        default: false
+
+jobs:
+  deploy:
+    name: Deploy (GridPane)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup branch config
+        run: |
+          # Get the current branch name and convert it to uppercase
+          BRANCH=$(echo ${{ github.ref }} | cut -d '/' -f 3  | tr '[:lower:]' '[:upper:]' | tr '-' '_')
+
+          # Set an environment var for the secret for the branch remote path target.
+          echo "DEPLOY_PATH_VAR=GRIDPANE_DEPLOY_PATH_${BRANCH}" >> $GITHUB_ENV
+
+          # Set an environment var for the secret for the branch remote host.
+          echo "DEPLOY_HOST_VAR=GRIDPANE_DEPLOY_HOST_${BRANCH}" >> $GITHUB_ENV
+
+          # Set an environment var for the secret for the branch remote host.
+          echo "DEPLOY_KEY_VAR=GRIDPANE_DEPLOY_KEY_${BRANCH}" >> $GITHUB_ENV
+
+          # Set an environment var for the secret for the branch remote user.
+          echo "DEPLOY_USER_VAR=GRIDPANE_DEPLOY_USER_${BRANCH}" >> $GITHUB_ENV
+
+          # Set the source directory, defaults to the repo root.
+          echo DEPLOY_SOURCE=${{ vars.GRIDPANE_DEPLOY_SOURCE }} >> $GITHUB_ENV
+
+          # Setup excluded files, if none set, supply a default set.
+          DEPLOY_EXCLUDE="${{ vars.GRIDPANE_DEPLOY_EXCLUDE }}"
+          if [ "" == "$DEPLOY_EXCLUDE" ]; then
+            DEPLOY_EXCLUDE=".*, .*/, *.md, composer.*, package.*"
+          fi
+
+          # Add additional excluded files (allows adding additional excludes to the default set).
+          DEPLOY_EXCLUDE_EXTRA="${{ vars.GRIDPANE_DEPLOY_EXCLUDE_EXTRA }}"
+          if [ "" != "$DEPLOY_EXCLUDE_EXTRA" ]; then
+            DEPLOY_EXCLUDE="$DEPLOY_EXCLUDE, $DEPLOY_EXCLUDE_EXTRA"
+          fi
+          echo DEPLOY_EXCLUDE="$DEPLOY_EXCLUDE" >> $GITHUB_ENV
+
+          # Setup rysnc arguments
+          RSYNC_ARGS="${{ vars.GRIDPANE_DEPLOY_RSYNC_ARGS }}"
+          if [ "" == "$RSYNC_ARGS" ]; then
+            RSYNC_ARGS="-Phav --delete"
+          fi
+          echo RSYNC_ARGS="$RSYNC_ARGS" >> $GITHUB_ENV
+
+      - name: Setup fallback deploy config
+        run: |
+          if [ "" == "${{ secrets[env.DEPLOY_KEY_VAR] }}" ]; then
+            echo "DEPLOY_KEY_VAR=GRIDPANE_DEPLOY_KEY" >> $GITHUB_ENV
+          fi
+
+          if [ "" == "${{ secrets[env.DEPLOY_HOST_VAR] }}" ]; then
+            echo "DEPLOY_HOST_VAR=GRIDPANE_DEPLOY_HOST" >> $GITHUB_ENV
+          fi
+
+          if [ "" == "${{ secrets[env.DEPLOY_USER_VAR] }}" ]; then
+            echo "DEPLOY_USER_VAR=GRIDPANE_DEPLOY_USER" >> $GITHUB_ENV
+          fi
+
+      - name: Debug Vars
+        if: ${{ github.event.inputs.debug }}
+        run: |
+          echo ""
+          echo "DEPLOY_PATH_VAR: $DEPLOY_PATH_VAR"
+          echo "REMOTE_PATH: ${{ secrets[env.DEPLOY_PATH_VAR] }}"
+          echo "DEPLOY_KEY_VAR: $DEPLOY_KEY_VAR"
+          echo "DEPLOY_KEY: ${{ secrets[env.DEPLOY_KEY_VAR] }}"
+          echo "DEPLOY_HOST_VAR: $DEPLOY_HOST_VAR"
+          echo "DEPLOY_HOST: ${{ secrets[env.DEPLOY_HOST_VAR] }}"
+          echo "DEPLOY_USER_VAR: $DEPLOY_USER_VAR"
+          echo "DEPLOY_USER: ${{ secrets[env.DEPLOY_USER_VAR] }}"
+          echo "DEPLOY_SOURCE: $DEPLOY_SOURCE"
+          echo "DEPLOY_EXCLUDE: $DEPLOY_EXCLUDE"
+          echo "RSYNC_ARGS: $RSYNC_ARGS"
+          echo ""
+
+      - name: Skip deployment
+        env:
+          DEPLOY_PATH_SECRET: ${{ secrets[env.DEPLOY_PATH_VAR] }}
+        if: ${{ !env.DEPLOY_PATH_SECRET }}
+        run: |
+          echo ""
+          echo "Skipping deployment for branch ${{ github.ref }}, no remote path configured via the ${{ env.DEPLOY_PATH_VAR }} secret."
+          echo ""
+          exit 0
+
+      - name: Checkout
+        env:
+          DEPLOY_PATH_SECRET: ${{ secrets[env.DEPLOY_PATH_VAR] }}
+        if: ${{ env.DEPLOY_PATH_SECRET }}
+        uses: actions/checkout@v4
+
+      - name: Deploy
+        env:
+          DEPLOY_PATH_SECRET: ${{ secrets[env.DEPLOY_PATH_VAR] }}
+        if: ${{ env.DEPLOY_PATH_SECRET }}
+        uses: easingthemes/ssh-deploy@main
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets[env.DEPLOY_KEY_VAR] }}
+          ARGS: ${{ env.RSYNC_ARGS }}
+          SOURCE: ${{ env.DEPLOY_SOURCE }}
+          REMOTE_HOST: ${{ secrets[env.DEPLOY_HOST_VAR] }}
+          REMOTE_USER: ${{ secrets[env.DEPLOY_USER_VAR] }}
+          TARGET: ${{ secrets[env.DEPLOY_PATH_VAR] }}
+          EXCLUDE: ${{ env.DEPLOY_EXCLUDE }}
+

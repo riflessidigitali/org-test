@@ -1,0 +1,39 @@
+internal-products:
+  name: Internal Products
+  project: 1 # ID of the project where issues for team repos are pushed
+  permission: pull # Repo permission assigned to the team's members
+  secrets: # Organization secrets used by team workflows.
+    workflow-manage: IP_WORKFLOW_MANAGE_PAT
+    issue-manage: IP_ISSUE_MANAGE_PAT
+  members: # All members of the team
+    - thomasplevy
+    - eri-trabiccolo
+    - vphat28
+  owner: eri-trabiccolo # Default code owner for all team repos
+  repos: # List of all repos owned by the team
+    - childify-me
+    - dotfiles
+  synced-files:
+    workflow/deploy-gridpane.yml:
+      - childify-me
+    issue/bug-report.yml:
+      - dotfiles
+  teams: # List of subteams, their members, and their permissions
+    admins:
+      name: Internal Products Admins
+      permission: maintain
+      members:
+        - thomasplevy
+        - eri-trabiccolo
+    cust-success:
+      name: Internal Products Customer Success
+      permission: triage
+      members:
+        - support-person-1
+    engineering:
+      name: Internal Products Engineering
+      permission: maintain
+      members:
+        - thomasplevy
+        - eri-trabiccolo
+        - vphat28
