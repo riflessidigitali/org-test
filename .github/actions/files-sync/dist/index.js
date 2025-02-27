@@ -35261,9 +35261,11 @@ const _repoVarRequiresSkip = async (repo, skipVar) => {
     try {
         const
             theVar       = skipVar.split('.')[0],
-            theValue     = skipVar.split('.')[1],
-            skipVar      = theVar,
-            {data}       = await octokitVarRead.request(
+            theValue     = skipVar.split('.')[1];
+
+        skipVar = theVar;
+        const 
+            {data} = await octokitVarRead.request(
                 'GET /repos/{org}/{repo}/actions/variables/{skipVar}',
                 {
                     org,
