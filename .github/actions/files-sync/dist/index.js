@@ -35117,7 +35117,7 @@ const updateConfiguredSyncedFileRepos = async (template) => {
 
     for ( const repo in reposConfig ){
         let repoSyncedFile = null;
-
+        console.log(reposConfig[repo]['synced-files']);
         if (reposConfig[repo]['synced-files']?.includes(template)) {
             repoSyncedFile = fileContent.replace(
                 /{{{REPO_WRITE_PAT}}}/g,
