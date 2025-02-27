@@ -1,0 +1,33 @@
+name: Sync GridPane Deploy Organization File
+
+on:
+  push:
+    paths:
+      # Templates.
+      - .github/templates/workflow/deploy-gridpane.yml
+
+      # Defs.
+      - defs/teams-config.yml
+
+      # When this file is edited.
+      - .github/workflows/workflow-deploy-gridpane-sync.yml
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  ORGANIZATION: ${{ github.repository_owner }}
+
+jobs:
+  projects:
+    name: GridPane Deploy Workflow Sync
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Sync deploy-gridpane
+        uses: ./.github/actions/files-sync
+        with:
+          org: ${{ env.ORGANIZATION }}
+          secrets: ${{ toJson(secrets) }}
+          what: deploy-gridpane
