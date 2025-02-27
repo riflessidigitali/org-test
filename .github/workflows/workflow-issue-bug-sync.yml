@@ -1,16 +1,16 @@
-name: Sync PHPCS Organization File
+name: Sync Issue Bug Report Organization File
 
 on:
   push:
     paths:
       # Templates.
-      - .github/templates/workflow/phpcs.yml
+      - .github/templates/issue/bug-report.yml
 
       # Defs.
       - defs/teams-config.yml
 
       # When this file is edited.
-      - .github/workflows/workflow-phpcs-sync.yml
+      - .github/workflows/workflow-issue-bug-sync.yml
     branches:
       - main
   workflow_dispatch:
@@ -30,4 +30,4 @@ jobs:
         with:
           org: ${{ env.ORGANIZATION }}
           secrets: ${{ toJson(secrets) }}
-          what: phpcs
+          what: issue/bug-report.yml

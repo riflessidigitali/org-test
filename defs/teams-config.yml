@@ -16,8 +16,6 @@ internal-products:
   synced-files:
     workflow/deploy-gridpane.yml:
       - childify-me
-    issue/bug-report.yml:
-      - dotfiles
   teams: # List of subteams, their members, and their permissions
     admins:
       name: Internal Products Admins

@@ -30,4 +30,4 @@ jobs:
         with:
           org: ${{ env.ORGANIZATION }}
           secrets: ${{ toJson(secrets) }}
-          what: deploy-gridpane
+          what: workflow/deploy-gridpane.yml

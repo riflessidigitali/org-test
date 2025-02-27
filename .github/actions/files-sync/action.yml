@@ -18,6 +18,7 @@ inputs:
       - workflow/project-automation.yml
       - workflow/membercore-build.yml
       - workflow/membercore-trigger-builds.yml
+      - issue/bug-report.yml
     required: true
   process_deletion:
     description: 'When set to `true` the action will also delete the files meant to be copied from repositories which are not associated to any teams/projects. Default is `false`'
