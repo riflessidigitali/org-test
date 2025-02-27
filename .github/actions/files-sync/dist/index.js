@@ -35124,7 +35124,7 @@ const updateConfiguredSyncedFileRepos = async (template) => {
                 reposConfig[repo].secrets?.['repo-write'] ?? ''
             );
         }
-
+        console.log(repoSyncedFile);
         await _createOrUpdateFileContent(
             getSyncedFileSecretKeyFromType(type),
             repo,
@@ -35262,12 +35262,13 @@ const _repoVarRequiresSkip = async (repo, skipVar) => {
         const
             theVar       = skipVar.split('.')[0],
             theValue     = skipVar.split('.')[1],
+            skipVar      = theVar,
             {data}       = await octokitVarRead.request(
                 'GET /repos/{org}/{repo}/actions/variables/{skipVar}',
                 {
                     org,
                     repo,
-                    theVar
+                    skipVar
                 }
             ),
             repoVarValue = data.value ?? false;
