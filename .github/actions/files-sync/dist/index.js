@@ -35188,7 +35188,7 @@ const _parseRepoSyncedFiles = (teamConfig, repo) => {
 
     let repoSyncedFiles = [];
 
-    if (teamConfig['synced-files']) {        
+    if (teamConfig['synced-files']) {
         for ( const syncedFile in teamConfig['synced-files'] ) {
             if (teamConfig['synced-files'][syncedFile].includes(repo)) {
                 repoSyncedFiles.push(syncedFile);
@@ -35264,7 +35264,7 @@ const _repoVarRequiresSkip = async (repo, skipVar) => {
             theValue     = skipVar.split('.')[1];
 
         skipVar = theVar;
-        const 
+        const
             {data} = await octokitVarRead.request(
                 'GET /repos/{org}/{repo}/actions/variables/{skipVar}',
                 {
@@ -35278,13 +35278,15 @@ const _repoVarRequiresSkip = async (repo, skipVar) => {
         // Handle repoVarValue as an array.
         if (
             theValue &&
-            typeof repoVarValue === 'string' && 
-            repoVarValue.startsWith('[') && 
+            typeof repoVarValue === 'string' &&
+            repoVarValue.startsWith('[') &&
             repoVarValue.endsWith(']')
         ) {
-            // Convert string array representation into an actual array.            
-            repoVarValue = repoVarValue.slice(1, -1).split(',').map(item => item.trim().toLowerCase());            
-            return repoVarValue.includes(theValue.toLowerCase());            
+            // Convert string array representation into an actual array.
+            repoVarValue = repoVarValue.slice(1, -1).split(',').map(item => item.trim().toLowerCase());
+            console.log(repoVarValue);
+            console.log(repoVarValue.includes(theValue.toLowerCase()));
+            return repoVarValue.includes(theValue.toLowerCase());
         }
         return 'true' === repoVarValue;
     } catch (error) {
