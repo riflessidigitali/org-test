@@ -35272,13 +35272,23 @@ const _repoVarRequiresSkip = async (repo, skipVar) => {
                     repo,
                     skipVar
                 }
-            ),
-            repoVarValue = data.value ?? false;
-        console.log(repoVarValue);
-        return repoVarValue && theValue ?
-            repoVarValue.filter((str) => str.toLowerCase().includes(theValue.toLowerCase())) :
-            'true' === repoVarValue;
+            );
 
+        let repoVarValue = data.value ?? false;
+        // Handle repoVarValue as an array.
+        if (
+            theValue &&
+            typeof repoVarValue === 'string' && 
+            repoVarValue.startsWith('[') && 
+            repoVarValue.endsWith(']')
+        ) {
+            // Convert string array representation into an actual array.            
+            repoVarValue = repoVarValue.slice(1, -1).split(',').map(item => item.trim());
+            return repoVarValue.filter((str) => str.toLowerCase().includes(
+                theValue.toLowerCase())
+            );
+        }
+        return 'true' === repoVarValue;
     } catch (error) {
         // If the variable is not found, we assume the automation is allowed (return false).
         if (error.status === 404) {
