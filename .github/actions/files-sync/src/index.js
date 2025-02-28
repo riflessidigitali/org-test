@@ -331,6 +331,7 @@ const _repoVarRequiresSkip = async (repo, skipVar) => {
                 }
             ),
             repoVarValue = data.value ?? false;
+        console.log(repoVarValue);
         return repoVarValue && theValue ?
             repoVarValue.filter((str) => str.toLowerCase().includes(theValue.toLowerCase())) :
             'true' === repoVarValue;
