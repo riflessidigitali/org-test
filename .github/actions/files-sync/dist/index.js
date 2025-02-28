@@ -34955,9 +34955,9 @@ let
     _octokitInstances = {};
 
 const
-    secrets        = JSON.parse(core.getInput('secrets')),
-    org            = core.getInput('org'),
-    what           = core.getInput('what'),
+    secrets           = JSON.parse(core.getInput('secrets')),
+    org               = core.getInput('org'),
+    what              = core.getInput('what'),
     syncSourceDirPath = `${ process.env.GITHUB_WORKSPACE }/.github/templates`;
 
 let processDeletion = core.getInput('process_deletion');
@@ -35090,7 +35090,7 @@ const updateIssueTemplateRepos = async (issueTemplate) => {
     const
         name                = issueTemplate.split('/')[1],
         type                = getSyncedFileTypeFromPath(issueTemplate),
-        skipVar             = 'ORG_ISSUE_TEMPLATES_SKIP.' + name;
+        skipVar             = `ORG_ISSUE_TEMPLATES_SKIP[${name}]`;
 
     await _createOrUpdateFile(
         `${syncSourceDirPath}/${issueTemplate}`,
@@ -35260,8 +35260,8 @@ const _repoVarRequiresSkip = async (repo, skipVar) => {
     const octokitVarRead = _getOctokitInstance(secrets.CSPF_REPO_VARS_READ_PAT);
     try {
         const
-            theVar       = skipVar.split('.')[0],
-            theValue     = skipVar.split('.')[1];
+            theVar       = skipVar.split('[')[0],
+            theValue     = skipVar.split('[')[1].split(']')[0];
 
         skipVar = theVar;
         const
@@ -35284,9 +35284,6 @@ const _repoVarRequiresSkip = async (repo, skipVar) => {
         ) {
             // Convert string array representation into an actual array.
             repoVarValue = repoVarValue.slice(1, -1).split(',').map(item => item.trim().toLowerCase());
-            console.log(repoVarValue);
-            console.log(repoVarValue.includes(theValue.toLowerCase()));
-            console.log(theValue);
             return repoVarValue.includes(theValue.toLowerCase());
         }
         return 'true' === repoVarValue;
