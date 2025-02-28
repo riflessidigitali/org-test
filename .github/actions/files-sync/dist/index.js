@@ -35142,6 +35142,7 @@ const updateConfiguredSyncedFileRepos = async (template) => {
  */
 const getSyncedFileSecretKeyFromType = (type) => {
     switch (type) {
+        case 'issue':
         case 'workflow':
             return 'workflow-manage';
         default:
