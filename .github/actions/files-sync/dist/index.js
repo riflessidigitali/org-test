@@ -35090,7 +35090,7 @@ const updateIssueTemplateRepos = async (issueTemplate) => {
     const
         name                = issueTemplate.split('/')[1],
         type                = getSyncedFileTypeFromPath(issueTemplate),
-        skipVar             = 'ORG_ISSUE_TEMPLATES_SKIP.' + name.replace(/\.(md|yml)$/, '');
+        skipVar             = 'ORG_ISSUE_TEMPLATES_SKIP.' + name;
 
     await _createOrUpdateFile(
         `${syncSourceDirPath}/${issueTemplate}`,
