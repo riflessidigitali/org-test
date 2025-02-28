@@ -35286,6 +35286,7 @@ const _repoVarRequiresSkip = async (repo, skipVar) => {
             repoVarValue = repoVarValue.slice(1, -1).split(',').map(item => item.trim().toLowerCase());
             console.log(repoVarValue);
             console.log(repoVarValue.includes(theValue.toLowerCase()));
+            console.log(theValue);
             return repoVarValue.includes(theValue.toLowerCase());
         }
         return 'true' === repoVarValue;
