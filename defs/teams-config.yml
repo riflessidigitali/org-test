@@ -5,6 +5,7 @@ internal-products:
   secrets: # Organization secrets used by team workflows.
     workflow-manage: IP_WORKFLOW_MANAGE_PAT
     issue-manage: IP_ISSUE_MANAGE_PAT
+    repo-write: IP_REPO_WRITE_PAT
   members: # All members of the team
     - thomasplevy
     - eri-trabiccolo

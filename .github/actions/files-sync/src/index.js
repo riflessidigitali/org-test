@@ -174,14 +174,13 @@ const updateConfiguredSyncedFileRepos = async (template) => {
 
     for ( const repo in reposConfig ){
         let repoSyncedFile = null;
-        console.log(reposConfig[repo]['syncedFiles']);
         if (reposConfig[repo]['syncedFiles']?.includes(template)) {
             repoSyncedFile = fileContent.replace(
                 /{{{REPO_WRITE_PAT}}}/g,
                 reposConfig[repo].secrets?.['repo-write'] ?? ''
             );
         }
-        console.log(repoSyncedFile);
+
         await _createOrUpdateFileContent(
             getSyncedFileSecretKeyFromType(type),
             repo,
