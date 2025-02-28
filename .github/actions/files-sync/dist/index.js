@@ -35283,10 +35283,8 @@ const _repoVarRequiresSkip = async (repo, skipVar) => {
             repoVarValue.endsWith(']')
         ) {
             // Convert string array representation into an actual array.            
-            repoVarValue = repoVarValue.slice(1, -1).split(',').map(item => item.trim());
-            return repoVarValue.filter((str) => str.toLowerCase().includes(
-                theValue.toLowerCase())
-            );
+            repoVarValue = repoVarValue.slice(1, -1).split(',').map(item => item.trim().toLowerCase());            
+            return repoVarValue.includes(theValue.toLowerCase());            
         }
         return 'true' === repoVarValue;
     } catch (error) {
