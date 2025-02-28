@@ -35145,7 +35145,7 @@ const getSyncedFileSecretKeyFromType = (type) => {
         case 'workflow':
             return 'workflow-manage';
         default:
-            return 'repo-write'
+            return 'workflow-manage';
     }
 }
 
